@@ -4,6 +4,9 @@ const fetchuser = require("../middleware/fetchuser");
 const Note = require("../models/Note");
 const { body, validationResult } = require("express-validator");
 
+
+
+
 //Route 1 ; Get all the notes using GET "/ap[i/auth/fetchallnotes".login required
 router.get("/fetchallnotes", fetchuser, async (req, res) => {
   try {
@@ -14,6 +17,8 @@ router.get("/fetchallnotes", fetchuser, async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
+
+
 
 //Route 2 : Add a new Note using POST method "/api/auth/addnote". login required
 router.post(
@@ -48,6 +53,9 @@ router.post(
     }
   }
 );
+
+
+
 //Route 3: Update an Existing note using : PUT "/api/auth/updatenote". Login required
 router.put("/updatenote/:id", fetchuser, async (req, res) => {
   const { title, description, tag } = req.body;
@@ -82,6 +90,8 @@ router.put("/updatenote/:id", fetchuser, async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
+
+
 
 //Route 4 : Delete an exisiting note using DELETE "/api/notes/deletenote". login required
 router.delete("/deletenote/:id", fetchuser, async (req, res) => {

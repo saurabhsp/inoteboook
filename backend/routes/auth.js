@@ -6,7 +6,12 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const fetchuser = require("../middleware/fetchuser");
 
+
+//used for salt or sign
 const JWT_SECRET = "Saurabh_Pakhale";
+
+
+
 // Route 1 : create a user using : POST "/api/auth/createuser". Doesn't require auth
 router.post(
   "/createuser",
@@ -65,6 +70,7 @@ router.post(
     }
   }
 );
+
 
 //ROUTE 2: authenticate a user using POST 'api/auth/login. No logon required
 router.post(
