@@ -2,8 +2,10 @@ import React, { useContext, useEffect, useState, useRef } from "react";
 import noteContext from "../context/Notes/noteContext";
 import Noteitem from "./Noteitem";
 import AddNote from "./AddNote";
+import "./style.css"
 
-const Notes = () => {
+
+const Notes = (props) => {
   const context = useContext(noteContext);
   const { notes, getNotes, editNote } = context;
   useEffect(() => {
@@ -24,6 +26,7 @@ const Notes = () => {
   const handleClick = (e) => {
     editNote(note.id, note.etitle, note.edescription, note.etag);
     refClose.current.click();
+    props.showAlert("Updated Successfully", "success")
     // e.preventDefault();
   };
 
@@ -35,13 +38,15 @@ const Notes = () => {
       edescription: currentNote.description,
       etag: currentNote.tag,
     });
+    
   };
 
   const ref = useRef(null);
   const refClose = useRef(null);
   return (
     <>
-      <AddNote />
+    
+      <AddNote showAlert={props.showAlert}/>
       <button
         ref={ref}
         type="button"
@@ -88,6 +93,8 @@ const Notes = () => {
                     aria-describedby="title"
                     onChange={onChange}
                     value={note.etitle}
+                    minLength={5}
+                    required
                   />
                 </div>
 
@@ -102,6 +109,7 @@ const Notes = () => {
                     name="edescription"
                     onChange={onChange}
                     value={note.edescription}
+                    required
                   />
                 </div>
 
@@ -131,8 +139,11 @@ const Notes = () => {
                 Close
               </button>
               <button
+                disabled={
+                  note.etitle.length < 5 || note.edescription.length < 5
+                }
                 type="submit"
-                className="btn btn-primary"
+                className="btn btn-dark"
                 onClick={handleClick}
               >
                 Update Note
@@ -142,11 +153,16 @@ const Notes = () => {
         </div>
       </div>
 
-      <div className="row my-3">
+      <div className="row my-3 text-center">
         <h2>You Notes</h2>
+        <div className="container">
+          {notes.length === 0 && <h5>No Notes to Display</h5>}
+        </div>
+
         {notes.map((note) => {
           return (
-            <Noteitem key={note._id} updateNote={updateNote} note={note} />
+            <Noteitem key={note._id} updateNote={updateNote} showAlert={props.showAlert}
+            note={note} />
           );
         })}
       </div>
