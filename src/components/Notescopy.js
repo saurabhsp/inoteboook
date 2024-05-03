@@ -1,41 +1,29 @@
-import React, { useContext, useEffect, useState, useRef } from "react";
-import noteContext from "../context/Notes/noteContext";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import noteContext from "../context/notes/noteContext";
 import Noteitem from "./Noteitem";
 import AddNote from "./AddNote";
-import "./style.css"
 import { useNavigate } from "react-router-dom";
 
-
 const Notes = (props) => {
+  let navigate = useNavigate();
   const context = useContext(noteContext);
   const { notes, getNotes, editNote } = context;
-  const navigate = useNavigate();
   useEffect(() => {
-    if(localStorage.getItem('token')){
+    if (localStorage.getItem("token")) {
       getNotes();
+    } else {
+      history.push("/login");
     }
-    else{
-      navigate('/login')
-    }
-    //eslint-disable-next-line
+    // eslint-disable-next-line
   }, []);
-
+  const ref = useRef(null);
+  const refClose = useRef(null);
   const [note, setNote] = useState({
     id: "",
     etitle: "",
     edescription: "",
     etag: "",
   });
-
-  const onChange = (e) => {
-    setNote({ ...note, [e.target.name]: e.target.value });
-  };
-  const handleClick = (e) => {
-    editNote(note.id, note.etitle, note.edescription, note.etag);
-    refClose.current.click();
-    props.showAlert("Updated Successfully", "success")
-    // e.preventDefault();
-  };
 
   const updateNote = (currentNote) => {
     ref.current.click();
@@ -45,39 +33,42 @@ const Notes = (props) => {
       edescription: currentNote.description,
       etag: currentNote.tag,
     });
-    
   };
 
-  const ref = useRef(null);
-  const refClose = useRef(null);
+  const handleClick = (e) => {
+    editNote(note.id, note.etitle, note.edescription, note.etag);
+    refClose.current.click();
+    props.showAlert("Updated Successfully", "success");
+  };
+
+  const onChange = (e) => {
+    setNote({ ...note, [e.target.name]: e.target.value });
+  };
+
   return (
     <>
-    
-      <AddNote showAlert={props.showAlert}/>
+      <AddNote showAlert={props.showAlert} />
       <button
         ref={ref}
         type="button"
         className="btn btn-primary d-none"
         data-bs-toggle="modal"
-        data-bs-target="#staticBackdrop"
+        data-bs-target="#exampleModal"
       >
-        Launch static backdrop modal
+        Launch demo modal
       </button>
-
       <div
         className="modal fade"
-        id="staticBackdrop"
-        data-bs-backdrop="static"
-        data-bs-keyboard="false"
+        id="exampleModal"
         tabIndex="-1"
-        aria-labelledby="staticBackdropLabel"
+        aria-labelledby="exampleModalLabel"
         aria-hidden="true"
       >
         <div className="modal-dialog">
           <div className="modal-content">
             <div className="modal-header">
-              <h5 className="modal-title" id="staticBackdropLabel">
-                Modal title
+              <h5 className="modal-title" id="exampleModalLabel">
+                Edit Note
               </h5>
               <button
                 type="button"
@@ -87,9 +78,9 @@ const Notes = (props) => {
               ></button>
             </div>
             <div className="modal-body">
-              <form>
+              <form className="my-3">
                 <div className="mb-3">
-                  <label htmlFor="etitle" className="form-label">
+                  <label htmlFor="title" className="form-label">
                     Title
                   </label>
                   <input
@@ -97,31 +88,30 @@ const Notes = (props) => {
                     className="form-control"
                     id="etitle"
                     name="etitle"
-                    aria-describedby="title"
-                    onChange={onChange}
                     value={note.etitle}
+                    aria-describedby="emailHelp"
+                    onChange={onChange}
                     minLength={5}
                     required
                   />
                 </div>
-
                 <div className="mb-3">
-                  <label htmlFor="edescription" className="form-label">
+                  <label htmlFor="description" className="form-label">
                     Description
                   </label>
-                  <textarea
+                  <input
                     type="text"
                     className="form-control"
                     id="edescription"
                     name="edescription"
-                    onChange={onChange}
                     value={note.edescription}
+                    onChange={onChange}
+                    minLength={5}
                     required
                   />
                 </div>
-
                 <div className="mb-3">
-                  <label htmlFor="etag" className="form-label">
+                  <label htmlFor="tag" className="form-label">
                     Tag
                   </label>
                   <input
@@ -129,9 +119,8 @@ const Notes = (props) => {
                     className="form-control"
                     id="etag"
                     name="etag"
-                    aria-describedby="title"
-                    onChange={onChange}
                     value={note.etag}
+                    onChange={onChange}
                   />
                 </div>
               </form>
@@ -149,9 +138,9 @@ const Notes = (props) => {
                 disabled={
                   note.etitle.length < 5 || note.edescription.length < 5
                 }
-                type="submit"
-                className="btn btn-dark"
                 onClick={handleClick}
+                type="button"
+                className="btn btn-primary"
               >
                 Update Note
               </button>
@@ -159,27 +148,24 @@ const Notes = (props) => {
           </div>
         </div>
       </div>
-
-      <div className="row my-3 text-center">
-        <h2>You Notes</h2>
-        <div className="container">
-          {notes.length === 0 && <h5>No Notes to Display</h5>}
+      <div className="container">
+        <div className="row my-3">
+          <h2>You Notes</h2>
+          <div className="container mx-2">
+            {notes.length === 0 && "No notes to display"}
+          </div>
+          
+          {notes.map((note) => {
+            return (
+              <Noteitem
+                key={note._id}
+                updateNote={updateNote}
+                note={note}
+                showAlert={props.showAlert}
+              />
+            );
+          })}
         </div>
-
-
-        {Array.isArray(notes) && notes.map((note) => {
-  return (
-    <Noteitem key={note._id} updateNote={updateNote} showAlert={props.showAlert} note={note} />
-  );
-})}
-
-{/* 
-        {notes.map((note) => {
-          return (
-            <Noteitem key={note._id} updateNote={updateNote} showAlert={props.showAlert}
-            note={note} />
-          );
-        })} */}
       </div>
     </>
   );

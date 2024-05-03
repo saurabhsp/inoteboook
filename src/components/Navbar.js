@@ -1,9 +1,14 @@
 import React from "react";
 import { Navbar, Nav } from "react-bootstrap";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import logo from "../logo/logowhite.jpg"
 
 export default function CustomNavbar() {
+  let navigate = useNavigate()
+  const handleLogout =()=>{
+    localStorage.removeItem('token');
+    navigate('/login')
+  }
   let location = useLocation();
 
   return (
@@ -11,10 +16,12 @@ export default function CustomNavbar() {
       <Navbar.Brand href="/" className="mx-3">
       <img 
   src={logo}
+  alt="Logo"
   height={"40px"}
   width={"120px"}
   style={{ borderRadius: "5px"}} 
 />
+
 
       
       </Navbar.Brand>
@@ -38,6 +45,7 @@ export default function CustomNavbar() {
             About
           </Nav.Link>
         </Nav>
+        {!localStorage.getItem('token')?
         <Nav className="mx-3">
           <Nav.Link href="/signup">
             <button className="btn btn-outline-warning ">Signup</button>
@@ -45,7 +53,7 @@ export default function CustomNavbar() {
           <Nav.Link href="/login">
             <button className="btn btn-outline-warning">Login</button>
           </Nav.Link>
-        </Nav>
+        </Nav>: <button onClick={handleLogout} className="btn btn-outline-warning mx-5">Logout</button>}
       </Navbar.Collapse>
     </Navbar>
   );
